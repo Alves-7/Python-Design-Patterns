@@ -16,11 +16,16 @@
    - 装饰器模式：该模式允许在运行时以动态方式为对象添加职责，通过接口给对象添加某些属性。
 
 ## 理解门面设计模式
+1. 门面（facade）通常是指建筑的表面。尤其是最有吸引力的那一面。它可以表示一种容易让人误解某人的真实感受或情况的行为或面貌。当
+人们从建筑物从外面经过时，可以欣赏其外部面貌，却不了解建筑物结构的复杂性。这就是门面方式的使用方式。
+2. 以店主为例介绍。假设你要到某个桑点买东西，但是你对这个商店的布局并不清楚。通常情况下，你会去找店主，因为店主对整个商店都很清楚。
+这里的接口就是店主。
+3. 门面设计模式实际上完成了下列事项：
+  - 它为子系统中的一组接口提供了统一的接口，并定义了一个高级的接口来帮助客户端通过更加简单的方式使用子系统。
+  - 门面所解决的问题是，如何用单个接口对象来表示复杂的子系统。实际上，他并不是封装子系统，而是对底层子系统进行组合。
+  - 他促进了实现与多个客户端的解耦。
 
-
-
-
-
+## UML图
 ```mermaid
 classDiagram
 class 客户端{
@@ -47,214 +52,28 @@ class 子系统N{
 门面 --|> 子系统3
 门面 --|> 子系统N
 ```
-
 *markdow画uml图[链接](https://blog.csdn.net/qq_41084756/article/details/129066162)*
+这个模式有3个主要主要的参与者：
+- 门面：将一组复杂系统封装起来，从而为外部世界提供一个舒适的外观；
+- 系统：表示一组不同的子系统，使整个系统混杂在一起，难以观察或使用；
+- 客户端：客户端与门面进行交互，并使用门面来调用子系统的方法。
 
-实现单例模式的简单方法是，使构造函数私有化，并创建一个静态方法来完成对象的初始化。
+### 门面
 
-```python
-from abc import ABCMeta, abstractmethod
+- 它是一个接口，它知道某个请求可以交由哪个子系统进行处理。
+- 它使用组合将客户端的请求委派给相应的子系统对象。
 
+### 系统
+在门面系统里，系统就是执行以下操作的实体。
+  - 它实现子系统的功能。同时，系统由一个类表示；
+  - 它处理门面对象分配的工作，但并不知道门面，而且不引用它。
 
-class Animal(metaclass=ABCMeta):
-    @abstractmethod
-    def do_say(self):
-        pass
-   
-   
-class Dog(Animal):
-    def do_say(self):
-        print("Bhow Bhow!")
-       
-       
-class Cat(Animal):
-    def do_say(self):
-        print("Meow Meow!")
+### 客户端
+- 客户端是实例化门面的类。
+- 为了让子系统完成相应的工作，客户端需要向门面提出请求。
 
+## 在现实世界中实现门面设计模式
 
-## forest factory defined
-class ForestFactory(object):
-    def make_sound(self, object_type):
-        return eval(object_type().do_say)
-```
-```python
-## client code
-if __name__ == "__main__":
-    forest = ForestFactory()
-    animal = input("Which animal do you want to create?")
-    forest.make_sound(animal)
-```
-利用Animal接口创建了两种产品（Dog和Cat），并使用do_say()方法来提供这些动物的相应叫声。ForestFactory是一个带有make_sound方法的工厂。
-
-## 工厂方法模式
-1. 定义接口创建对象，但工厂本身并不负责创建对象，由子类完成。
-2. Factory方法通过继承来创建对象。
-3. 工厂方法使设计具有可定制性。
-```mermaid
-classDiagram
-class Product{
-    
-}
-class Creator{
-     + factoryMethod()
-}
-
-class ConcreteProduct{
-    
-}
-
-class ConcreteCreator{
-   + factoryMethod()
-}
-
-ConcreteProduct --> Product
-ConcreteCreator --> Creator
-ConcreteCreator ..> ConcreteProduct
-```
-上图UML中，Creator接口的factoryMethod()方法和ConcreteCreator()类共同决定了要创建Product的哪个子类。因此，工厂方法模式定义了一个接口来创建对象，但具体
-实例化哪个类则是由他的子类来决定。
-
-### 实现工厂方法
-```python
-from abc import ABCMeta, abstractmethod
-
-
-class Section(metaclass=ABCMeta):
-    @abstractmethod
-    def describe(self):
-        pass
-   
-   
-class PersonalSection(Section):
-    def describe(self):
-        print("Personal Section")
-      
-      
-class AlbumSection(Section):
-    def describe(self):
-        print("Album Section")
-      
-
-class PatentSection(Section):
-    def describe(self):
-        print("Patent Section")
-      
-      
-class PublicationSection(Section):
-    def describe(self):
-        print("Publication Section")
-
-
-class Profile(metaclass=ABCMeta):
-    def __init__(self):
-        self.sections = []
-        self.create_profile()
-      
-    @abstractmethod
-    def create_profile(self): 
-        pass
-    
-    def get_section(self):
-         return self.sections
-    
-    def add_section(self, section):
-        self.sections.append(section)
-      
-        
-class linkedin(Profile):
-    def create_profile(self):
-        self.add_section(PersonalSection())
-        self.add_section(PatentSection())
-        self.add_section(PublicationSection())
-        
-        
-class facebook(Profile):
-    def create_profile(self):
-        self.add_section(PersonalSection())
-        self.add_section(AlbumSection())
-```
-```python
-if __name__ == "__main__":
-    profile_type = input("Which profile you'd like to create? [LinkedIn or Facebook]")
-    profile = eval(profile_type.lower())()
-    print("Creating Profile ..", type(profile).__name__)
-    print("Profile has sections --", profile.get_section)
-```
-以Facebook为例，它实例化facebook [ConcreteCreator]类。它会在内部创建ConcreteProduct，将实例化PersonalSection和AlbumSection。
-如果选择LinkedIn，则实例化linkedin [ConcreteCreator]类。它会在内部创建ConcreteProduct，将实例化PersonalSection、PatentSection和PublicationSection。
-
-### 工厂方法模式的优点
-1. 更大的灵活性，使得代码更加通用。
-2. 松耦合。创建对象的代码与使用的代码分开。添加新类更加容易，降低维护成本。
-
-## 抽象工厂模式
-抽象工厂模式的主要目的是创建一系列相关的对象，而不需要指定其具体类。工厂方法将创建实例的任务委托给子类，而抽象工厂方法的目的是创建一系列相关对象。
-```mermaid
-classDiagram
-class Client{
-  
-}
-class AbstractFactory{
-   create_product()
-   create_another_product()  
-}
-
-class ConcreteFactory1{
-   create_product()
-   create_another_product()
-}
-
-
-class ConcreteFactory2{
-   create_product()
-   create_another_product()
-}
-
-class AbstractProduct{
-   
-}
-
-
-class ConcreteProduct2{
-   
-}
-
-class AnotherAbstractProduct{
-   
-}
-
-class AnotherConcreteProduct1{
-   
-}
-class AnotherConcreteProduct2{
-   
-}
-
-Client "Uses" --> AbstractFactory
-ConcreteFactory1 --> AbstractFactory
-ConcreteProduct1 --> AbstractProduct
-AnotherConcreteProduct1 --> AnotherAbstractProduct
-ConcreteFactory1 "Creates" --> ConcreteProduct1
-ConcreteFactory1 "Creates" --> AnotherConcreteProduct1
-
-ConcreteFactory2 --> AbstractFactory
-ConcreteProduct2 --> AbstractProduct
-AnotherConcreteProduct2 --> AnotherAbstractProduct
-ConcreteFactory2 "Creates" --> ConcreteProduct2
-ConcreteFactory2 "Creates" --> AnotherConcreteProduct2
-```
-ConcreteFactory1和ConcreteFactory2实现了AbstractFactory，并创建ConcreteProduct1、ConcreteProduct2、AhotherConcreteProduct1、AhotherConcreteProduct2。
-
-### 实现抽象工厂模式
-详情见 pizza_factory.py
-
-## 工厂方法与抽象工厂方法
-
-| 工厂方法               | 抽象工厂方法                 |
-|--------------------|------------------------|
-| 它向客户开放了一个创建对象的方法   | 包含一个或多个工厂方法来创建一系列的相关对象 |
-| 它使用继承和子类来决定要创建哪些对象 | 它使用组合将创建对象的任务委托给其他类    |
-| 工厂方法用于创建一个产品       | 用于创建相关产品系列             |
 
 
 
