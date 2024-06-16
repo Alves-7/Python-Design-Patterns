@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# @FileName : pizza_factory.py.py
+# @FileName : pizza_factory.py
 # @Time : 2024/6/11 22:00
 # @Author : Alves
 """
