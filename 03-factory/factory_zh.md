@@ -245,7 +245,7 @@ ConcreteFactory2 "Creates" --> AnotherConcreteProduct2
 ConcreteFactory1和ConcreteFactory2实现了AbstractFactory，并创建ConcreteProduct1、ConcreteProduct2、AhotherConcreteProduct1、AhotherConcreteProduct2。
 
 ### 实现抽象工厂模式
-详情见 pizza_factory.py
+详情见[pizza_factory.py](./pizza_factory.py)
 
 ## 工厂方法与抽象工厂方法
 
